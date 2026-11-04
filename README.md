@@ -51,6 +51,7 @@ print(f"Динамическая вязкость: {mu:.8e} Па·с")
 
 ```powershell
 python -m examples.basic_usage
+```
 
 ### Возвращаемые значения
 
