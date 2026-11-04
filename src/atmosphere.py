@@ -13,6 +13,8 @@ _EARTH_RADIUS = 6356767    # Радиус Земли, м
 _G0 = 9.80665              # Ускорение свободного падения, м/с²
 _R_AIR = 287.05287         # Удельная газовая постоянная воздуха, Дж/(кг·К)
 _K_AIR = 1.4               # Показатель адиабаты воздуха
+_BETA_S = 1.458e-6         # Коэффициент Сазерленда
+_S = 110.4                 # Постоянная Сазерленда, К
 
 # Геопотенциальные высоты, на которых меняется температурный градиент, м
 _LAYER_HEIGHTS = [
@@ -133,7 +135,13 @@ def _speed_of_sound(T: float) -> float:
     return math.sqrt(_K_AIR * _R_AIR * T)
 
 
-def atmosphere_geometrical(h: float) -> tuple[float, float, float, float, float]:
+def _dynamic_viscosity(T: float) -> float:
+    """Вычисляет динамическую вязкость воздуха"""
+
+    return _BETA_S * T ** 1.5 / (T + _S)
+
+
+def atmosphere_geometrical(h: float) -> tuple[float, float, float, float, float, float]:
     """Рассчитывает параметры стандартной атмосферы по геометрической высоте"""
 
     _validate_height(h)
@@ -145,5 +153,6 @@ def atmosphere_geometrical(h: float) -> tuple[float, float, float, float, float]
     p = _pressure(H)
     rho = _density(p, T)
     a = _speed_of_sound(T)
+    mu = _dynamic_viscosity(T)
 
-    return g, T, p, rho, a
+    return g, T, p, rho, a, mu
